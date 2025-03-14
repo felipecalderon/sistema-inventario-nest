@@ -1,7 +1,7 @@
-// src/users/users.service.ts
 import {
     BadRequestException,
     Injectable,
+    InternalServerErrorException,
     NotFoundException,
 } from '@nestjs/common'
 import { InjectModel } from '@nestjs/mongoose'
@@ -11,6 +11,7 @@ import { UpdateUserDto } from './dto/update-user.dto'
 import { User, UserDocument } from './users.schema'
 import { validateId } from 'src/utils/validate-id'
 import { RolesService } from '../role/role.service'
+import { isMongoError } from '@/utils/validate-mongo-errors'
 
 @Injectable()
 export class UsersService {
@@ -20,33 +21,35 @@ export class UsersService {
     ) {}
 
     async create(createUserDto: CreateUserDto): Promise<UserDocument> {
-        const existingUser = await this.userModel
-            .findOne({ email: createUserDto.email })
-            .exec()
-        if (existingUser) {
-            throw new BadRequestException('El usuario ya existe.')
-        }
-
-        let role = await this.rolesService.getRoleById(createUserDto.role)
-        if (!role) {
-            const roles = await this.rolesService.getAllRoles()
-            if (!roles.length) {
-                role = await this.rolesService.createRole({
-                    name: 'superusuario',
-                    permissions: [],
-                    immutable: true,
-                    isSuperAdmin: true,
-                })
-            } else {
-                throw new BadRequestException('Debe especificar un rol válido.')
+        try {
+            let role = await this.rolesService.getRoleById(createUserDto.role)
+            if (!role) {
+                const roles = await this.rolesService.getAllRoles()
+                if (!roles.length) {
+                    role = await this.rolesService.createRole({
+                        name: 'superusuario',
+                        permissions: [],
+                        immutable: true,
+                        isSuperAdmin: true,
+                    })
+                } else {
+                    throw new BadRequestException(
+                        'Debe especificar un rol válido.',
+                    )
+                }
             }
+            const user = await this.userModel.create({
+                ...createUserDto,
+                role: role._id,
+            })
+            const savedUser = await user.save()
+            return savedUser.populate('role')
+        } catch (error) {
+            isMongoError(error, User.name, createUserDto.email)
+            throw new InternalServerErrorException(
+                'Error interno (distinto de la base de datos)',
+            )
         }
-        const user = await this.userModel.create({
-            ...createUserDto,
-            role: role._id,
-        })
-        const savedUser = await user.save()
-        return savedUser.populate('role')
     }
 
     async findAll(): Promise<User[]> {

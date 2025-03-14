@@ -3,7 +3,6 @@ import { ConfigModule } from '@nestjs/config'
 import { DatabaseModule } from '@/database/database.module'
 import { AuthModule } from '@/modules/auth/auth.module'
 import { CompaniesModule } from '@/modules/companies/companies.module'
-import { TransfersModule } from '@/modules/transfers/transfers.module'
 import { UsersModule } from '@/modules/users/users.module'
 import { RolesModule } from '@/modules/role/role.module'
 
@@ -13,7 +12,6 @@ import { RolesModule } from '@/modules/role/role.module'
         DatabaseModule,
         AuthModule,
         CompaniesModule,
-        TransfersModule,
         UsersModule,
         RolesModule,
     ],

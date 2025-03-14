@@ -1,19 +1,34 @@
-import { Controller, Post, Body, Get, Param, Delete } from '@nestjs/common'
+import {
+    Controller,
+    Post,
+    Body,
+    Get,
+    Param,
+    Delete,
+    Patch,
+} from '@nestjs/common'
 import { CreateRoleDTO } from './dto/create-role.dto'
 import { RolesService } from './role.service'
+import { PermissionsService } from './permissions/permission.service'
 
 @Controller('roles')
 export class RoleController {
-    constructor(private readonly rolesService: RolesService) {}
+    constructor(
+        private readonly rolesService: RolesService,
+        private readonly permissionService: PermissionsService,
+    ) {}
 
     @Post()
     async createRole(@Body() createRoleDto: CreateRoleDTO) {
         return await this.rolesService.createRole(createRoleDto)
     }
 
-    @Post('permissions')
-    async createPermission(@Body() name: string) {
-        return await this.rolesService.createPermission(name)
+    @Patch(':id')
+    async updateRolePermissions(
+        @Param('id') id: string,
+        @Body() { permissions }: { permissions: string[] },
+    ) {
+        return await this.rolesService.updateRolePermissions(id, permissions)
     }
 
     @Get(':id')
@@ -29,5 +44,18 @@ export class RoleController {
     @Delete(':id')
     async deleteRole(@Param('id') id: string) {
         return await this.rolesService.deleteRole(id)
+    }
+
+    @Get('permissions')
+    async getAllPermissions() {
+        return await this.permissionService.findPermissionsByIds()
+    }
+
+    @Post('permissions')
+    async createPermission(@Body() { name }: { name: string | string[] }) {
+        if (Array.isArray(name)) {
+            return await this.permissionService.createBulkPermissions(name)
+        }
+        return await this.permissionService.createPermission(name)
     }
 }
