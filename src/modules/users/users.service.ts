@@ -45,7 +45,8 @@ export class UsersService {
             ...createUserDto,
             role: role._id,
         })
-        return user.save()
+        const savedUser = await user.save()
+        return savedUser.populate('role')
     }
 
     async findAll(): Promise<User[]> {

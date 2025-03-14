@@ -90,4 +90,11 @@ export class RolesService {
 
         return this.roleModel.findByIdAndDelete(id).exec()
     }
+
+    async createPermission(name: string): Promise<PermissionDocument> {
+        const existingPermission = await this.permissionModel.create({
+            name,
+        })
+        return existingPermission.save()
+    }
 }

@@ -11,6 +11,11 @@ export class RoleController {
         return await this.rolesService.createRole(createRoleDto)
     }
 
+    @Post('permissions')
+    async createPermission(@Body() name: string) {
+        return await this.rolesService.createPermission(name)
+    }
+
     @Get(':id')
     async getRoleById(@Param('id') id: string) {
         return await this.rolesService.getRoleById(id)

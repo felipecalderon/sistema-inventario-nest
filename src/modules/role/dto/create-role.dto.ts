@@ -5,6 +5,7 @@ import {
     IsBoolean,
     IsLowercase,
     IsNotEmpty,
+    IsOptional,
     IsString,
 } from 'class-validator'
 import { Type } from 'class-transformer'
@@ -36,6 +37,7 @@ export class CreateRoleDTO {
         description: 'Indica si el rol es superadmin',
         example: false,
     })
+    @IsOptional()
     @IsBoolean()
     readonly isSuperAdmin: boolean
 }
