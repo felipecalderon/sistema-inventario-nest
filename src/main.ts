@@ -11,14 +11,14 @@ import { ConfigService } from '@nestjs/config'
 async function bootstrap() {
     const app = await NestFactory.create<NestFastifyApplication>(
         AppModule,
-        new FastifyAdapter(),
+        new FastifyAdapter({ logger: false }),
     )
 
     // CORS
     app.enableCors()
 
     // Prefijo global
-    app.setGlobalPrefix('api/v1')
+    app.setGlobalPrefix('api')
 
     // Global trnasformers para DTO's
     app.useGlobalPipes(

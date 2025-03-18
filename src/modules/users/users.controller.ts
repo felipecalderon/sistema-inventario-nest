@@ -47,7 +47,7 @@ export class UsersController {
         description: 'Lista de usuarios',
         type: [User],
     })
-    async findAll(): Promise<User[]> {
+    async findAll() {
         return this.usersService.findAll()
     }
 
@@ -56,7 +56,7 @@ export class UsersController {
     @ApiResponse({ status: 200, description: 'Usuario encontrado', type: User })
     @ApiResponse({ status: 400, description: 'ID inválido' })
     @ApiResponse({ status: 404, description: 'Usuario no encontrado' })
-    async findOne(@Param('id') id: string): Promise<User> {
+    async findOne(@Param('id') id: string) {
         return await this.usersService.findOne(id)
     }
 

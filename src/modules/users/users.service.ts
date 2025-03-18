@@ -52,19 +52,39 @@ export class UsersService {
         }
     }
 
-    async findAll(): Promise<User[]> {
-        return this.userModel.find().populate('role').exec()
+    async findAll(): Promise<Omit<UserDocument, 'password'>[]> {
+        return this.userModel
+            .find()
+            .select('-password')
+            .populate({
+                path: 'role',
+                populate: { path: 'permissions' },
+            })
+            .exec()
     }
 
     async findOneByEmail(email: string): Promise<UserDocument | null> {
-        return this.userModel.findOne({ email }).populate('role').exec()
+        return this.userModel
+            .findOne({ email })
+            .populate({
+                path: 'role',
+                populate: { path: 'permissions' },
+            })
+            .exec()
     }
 
-    async findOne(id: string): Promise<UserDocument> {
+    async findOne(id: string): Promise<Omit<UserDocument, 'password'>> {
         validateId(id)
-        const user = await this.userModel.findById(id).exec()
+        const user = await this.userModel
+            .findById(id)
+            .select('-password')
+            .exec()
         if (!user) throw new NotFoundException('Usuario no encontrado')
-        const userWithRole = user.populate('role')
+
+        const userWithRole = user.populate({
+            path: 'role',
+            populate: { path: 'permissions' },
+        })
         return userWithRole
     }
 
@@ -80,7 +100,7 @@ export class UsersService {
         return updatedUser
     }
 
-    async remove(id: string): Promise<User> {
+    async remove(id: string): Promise<UserDocument> {
         validateId(id)
         const deletedUser = await this.userModel.findByIdAndDelete(id).exec()
         if (!deletedUser) throw new NotFoundException('Usuario no encontrado')

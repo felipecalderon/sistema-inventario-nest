@@ -58,4 +58,9 @@ export class RoleController {
         }
         return await this.permissionService.createPermission(name)
     }
+
+    @Delete('permissions/:id')
+    async deletePermission(@Param('id') id: string) {
+        return await this.permissionService.deletePermission(id)
+    }
 }

@@ -84,4 +84,15 @@ export class PermissionsService {
     async getAllPermissions(): Promise<PermissionDocument[]> {
         return this.permissionModel.find().exec()
     }
+
+    async deletePermission(id: string): Promise<PermissionDocument | null> {
+        try {
+            return await this.permissionModel.findByIdAndDelete(id).exec()
+        } catch (error) {
+            isMongoError(error, Permission.name, id)
+            throw new InternalServerErrorException(
+                'Error interno (distinto de la base de datos)',
+            )
+        }
+    }
 }

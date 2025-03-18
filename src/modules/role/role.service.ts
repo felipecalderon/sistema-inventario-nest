@@ -94,19 +94,26 @@ export class RolesService {
         id: string,
         permissions: string[],
     ): Promise<RoleDocument | null> {
-        const role = await this.roleModel
-            .findById(id)
-            .populate('permissions')
-            .exec()
-        if (!role) {
-            throw new NotFoundException('Rol no encontrado.')
+        try {
+            const role = await this.roleModel
+                .findById(id)
+                .populate('permissions')
+                .exec()
+            if (!role) {
+                throw new NotFoundException('Rol no encontrado.')
+            }
+            const findPermissions =
+                await this.permissionService.findPermissionsByIds(permissions)
+            if (findPermissions.length !== permissions.length) {
+                throw new BadRequestException('Algunos permisos no existen.')
+            }
+            role.permissions = findPermissions.map((p) => p._id)
+            return role.save()
+        } catch (error) {
+            isMongoError(error, Role.name, id)
+            throw new InternalServerErrorException(
+                'Error interno (distinto de la base de datos)',
+            )
         }
-        const findPermissions =
-            await this.permissionService.findPermissionsByIds(permissions)
-        if (findPermissions.length !== permissions.length) {
-            throw new BadRequestException('Algunos permisos no existen.')
-        }
-        role.permissions = findPermissions.map((p) => p._id)
-        return role.save()
     }
 }
