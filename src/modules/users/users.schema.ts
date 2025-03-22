@@ -12,6 +12,12 @@ export class User {
     @Prop({ required: true })
     name: string
 
+    @Prop({ required: true })
+    lastName: string
+
+    @Prop({ required: true })
+    rut: string
+
     @Prop({ required: true, unique: true })
     email: string
 
@@ -20,6 +26,24 @@ export class User {
 
     @Prop({ type: Types.ObjectId, ref: Role.name, required: true })
     role: Types.ObjectId // Referencia a roles
+
+    @Prop({ required: false })
+    contractStartDate: string
+
+    @Prop({ required: false })
+    position: string
+
+    @Prop({ required: false })
+    phone: string
+
+    @Prop({ required: false })
+    image: string
+
+    @Prop({ required: false })
+    address: string
+
+    @Prop({ required: false })
+    city: string
 }
 
 export const UserSchema = SchemaFactory.createForClass(User)

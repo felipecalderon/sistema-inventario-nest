@@ -5,6 +5,8 @@ import { AuthModule } from '@/modules/auth/auth.module'
 import { CompaniesModule } from '@/modules/companies/companies.module'
 import { UsersModule } from '@/modules/users/users.module'
 import { RolesModule } from '@/modules/role/role.module'
+import { QrModule } from '@/modules/qr/qr.module'
+import { InoutModule } from '@/modules/inout/inout.module'
 
 @Module({
     imports: [
@@ -14,6 +16,8 @@ import { RolesModule } from '@/modules/role/role.module'
         CompaniesModule,
         UsersModule,
         RolesModule,
+        QrModule,
+        InoutModule,
     ],
     controllers: [],
     providers: [],

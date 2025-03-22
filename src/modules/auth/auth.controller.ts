@@ -3,10 +3,15 @@ import { AuthService } from './auth.service'
 import { ApiResponse } from '@nestjs/swagger'
 import { LocalAuthGuard } from './guards/local.guard'
 import { JwtAuthGuard } from './guards/jwt.guard'
+import { UsersService } from '../users/users.service'
+import { CreateUserDto } from '../users/dto/create-user.dto'
 
 @Controller('auth')
 export class AuthController {
-    constructor(private authService: AuthService) {}
+    constructor(
+        private authService: AuthService,
+        private readonly userService: UsersService,
+    ) {}
 
     @Post('login')
     @UseGuards(LocalAuthGuard)
@@ -39,5 +44,18 @@ export class AuthController {
     })
     refresh(@Body('refresh_token') refreshToken: string) {
         return this.authService.refreshToken(refreshToken)
+    }
+
+    @Post('register')
+    @ApiResponse({
+        status: 201,
+        description: 'Usuario creado exitosamente',
+    })
+    @ApiResponse({
+        status: 400,
+        description: 'Usuario ya existe',
+    })
+    async register(@Body() body: CreateUserDto) {
+        return this.userService.create(body)
     }
 }

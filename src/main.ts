@@ -35,7 +35,7 @@ async function bootstrap() {
     const strPort: string | undefined = config.get('PORT')
     const port: number = strPort ? parseInt(strPort) : 3001
     documentation(app)
-    await app.listen(port)
+    await app.listen(port, '0.0.0.0')
     console.log(`dife-back is running on port ${port}`)
 }
 
